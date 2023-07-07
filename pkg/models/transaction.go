@@ -91,3 +91,39 @@ func GetTransactionsBySymbol(uid int, symbol string) ([]Transaction, error) {
 
 	return transactions, err
 }
+
+func GetTransactionsByPortfolio(uid int, portfolioID int) ([]Transaction, error) {
+	var transactions []Transaction
+
+	rows, err := database.DB.Query(`
+		SELECT transaction.*, portfolio.name AS portfolioName, currency.name AS currencyName, transactionType.name AS transactionsTypeName
+		FROM transaction
+		JOIN portfolio ON transaction.portfolioID = portfolio.id
+		JOIN currency ON transaction.currencyID = currency.id
+		JOIN transactionType ON transaction.transactionsTypeID = transactionType.id
+		WHERE portfolio.userID = ? AND transaction.portfolioID = ?;
+	`, uid, portfolioID)
+	if err != nil {
+		return transactions, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var t Transaction
+		var p Portfolio
+		var c Currency
+		var tt TransactionType
+
+		if err := rows.Scan(&t.ID, &t.Symbol, &t.Name, &p.ID, &c.ID, &t.SharesOwned, &t.CostPerShare, &t.Commission, &t.TransactionDate, &t.TransactionTime, &t.PurchaseExchangeRate, &tt.ID, &t.Notes, &p.Name, &c.Name, &tt.Name); err != nil {
+			return transactions, err
+		}
+
+		t.Portfolio = p
+		t.Currency = c
+		t.TransactionType = tt
+
+		transactions = append(transactions, t)
+	}
+
+	return transactions, err
+}

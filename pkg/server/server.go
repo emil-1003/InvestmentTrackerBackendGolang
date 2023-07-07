@@ -23,7 +23,8 @@ func New(name, version, port, path string) (*Server, error) {
 	s := r.PathPrefix(fmt.Sprintf("/%s/%s", path, version)).Subrouter()
 
 	s.Path("/transactions").Handler(middleware.AuthOnly(handlers.GetTransactions())).Methods("GET")
-	s.Path("/transactions/{symbol}").Handler(middleware.AuthOnly(handlers.GetTransactionsBySymbol())).Methods("GET")
+	s.Path("/transactions/symbol/{symbol}").Handler(middleware.AuthOnly(handlers.GetTransactionsBySymbol())).Methods("GET")
+	s.Path("/transactions/portfolio/{portfolioID}").Handler(middleware.AuthOnly(handlers.GetTransactionsByPortfolio())).Methods("GET")
 
 	return &Server{name, version, s, port}, nil
 }

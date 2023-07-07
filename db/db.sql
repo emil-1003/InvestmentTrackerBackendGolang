@@ -11,14 +11,16 @@ DROP TABLE IF EXISTS transactionType;
 
 CREATE TABLE portfolio (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    userID BIGINT(20),
+    FOREIGN KEY (userID) REFERENCES usermanagement.users(id)
 );
 
-INSERT INTO portfolio (name)
+INSERT INTO portfolio (name, userID)
 VALUES
-('Nordnet'),
-('Saxo Bank'),
-('Jyske Bank');
+('Nordnet', 3),
+('Saxo Bank', 3),
+('Jyske Bank', 3);
 
 CREATE TABLE currency (
     id INT AUTO_INCREMENT PRIMARY KEY,

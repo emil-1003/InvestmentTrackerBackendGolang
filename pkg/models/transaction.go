@@ -20,7 +20,7 @@ type Transaction struct {
 	Notes                string          `json:"notes"`
 }
 
-func GetTransactions() ([]Transaction, error) {
+func GetTransactions(uid int) ([]Transaction, error) {
 	var transactions []Transaction
 
 	rows, err := database.DB.Query(`
@@ -28,8 +28,9 @@ func GetTransactions() ([]Transaction, error) {
 		FROM transaction
 		JOIN portfolio ON transaction.portfolioID = portfolio.id
 		JOIN currency ON transaction.currencyID = currency.id
-		JOIN transactionType ON transaction.transactionsTypeID = transactionType.id;
-	`)
+		JOIN transactionType ON transaction.transactionsTypeID = transactionType.id
+		WHERE portfolio.userID = ?;
+	`, uid)
 	if err != nil {
 		return transactions, err
 	}

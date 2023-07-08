@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/emil-1003/InvestmentTrackerBackendGolang/pkg/database"
 )
 
@@ -162,4 +164,16 @@ func GetTransactionsByPortfolioSymbol(uid int, portfolioID int, symbol string) (
 	}
 
 	return transactions, err
+}
+
+func CreateTransaction(t Transaction, userID int) error {
+	_, err := database.DB.Exec(`
+		INSERT INTO transaction (symbol, name, portfolioID, currencyID, sharesOwned, costPerShare, commission, transactionDate, transactionTime, purchaseExchangeRate, transactionsTypeID, notes)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, t.Symbol, t.Name, t.Portfolio.ID, t.Currency.ID, t.SharesOwned, t.CostPerShare, t.Commission, t.TransactionDate, t.TransactionTime, t.PurchaseExchangeRate, t.TransactionType.ID, t.Notes)
+	if err != nil {
+		return fmt.Errorf("failed to create transaction: %w", err)
+	}
+
+	return err
 }

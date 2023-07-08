@@ -112,3 +112,28 @@ func GetTransactionsByPortfolioSymbol() http.HandlerFunc {
 		json.NewEncoder(w).Encode(transactions)
 	}
 }
+
+func CreateTransaction() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		token, ok := authentication.GetToken(r)
+		if !ok {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		var body models.Transaction
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, fmt.Errorf("failed to read body: %w", err).Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := models.CreateTransaction(body, token.Uid); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Write([]byte("transaction was registered successfully"))
+	}
+}

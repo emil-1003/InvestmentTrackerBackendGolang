@@ -24,6 +24,8 @@ func New(name, version, port, path string) (*Server, error) {
 
 	s.Path("/currencies").Handler(middleware.AuthOnly(handlers.GetCurrencies())).Methods("GET")
 
+	s.Path("/transactiontypes").Handler(middleware.AuthOnly(handlers.GetTransactionTypes())).Methods("GET")
+
 	s.Path("/transactions").Handler(middleware.AuthOnly(handlers.GetTransactions())).Methods("GET")
 	s.Path("/transactions/symbol/{symbol}").Handler(middleware.AuthOnly(handlers.GetTransactionsBySymbol())).Methods("GET")
 	s.Path("/transactions/portfolio/{portfolioID}").Handler(middleware.AuthOnly(handlers.GetTransactionsByPortfolio())).Methods("GET")

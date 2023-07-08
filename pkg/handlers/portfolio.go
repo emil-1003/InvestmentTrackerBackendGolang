@@ -39,10 +39,7 @@ func CreatePortfolio() http.HandlerFunc {
 			return
 		}
 
-		var body struct {
-			Name string
-		}
-
+		var body models.Portfolio
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			http.Error(w, fmt.Errorf("failed to read body: %w", err).Error(), http.StatusBadRequest)
 			return

@@ -9,6 +9,26 @@ import (
 	"github.com/emil-1003/InvestmentTrackerBackendGolang/pkg/models"
 )
 
+func GetPortfolios() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		token, ok := authentication.GetToken(r)
+		if !ok {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		portfolios, err := models.GetPortfolios(token.Uid)
+		if err != nil {
+			http.Error(w, fmt.Errorf("failed to get portfolios: %w", err).Error(), http.StatusNotFound)
+			return
+		}
+
+		json.NewEncoder(w).Encode(portfolios)
+	}
+}
+
 func CreatePortfolio() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
